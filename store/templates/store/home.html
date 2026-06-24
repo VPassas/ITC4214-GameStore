@@ -1,10 +1,10 @@
-{% extends "store/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Home - Game Store{% endblock %}
 
 {% block content %}
   <h1 class="mb-4">Games</h1>
-
+  <!-- show the games games in a grid -->
   <div class="row">
     {% for game in games %}
       <div class="col-md-4 mb-4">
@@ -18,6 +18,7 @@
               {{ game.category.name }} · {{ game.get_platform_display }}
             </p>
             <p class="fw-bold">${{ game.price }}</p>
+            <a href="{% url 'store:game_detail' game.id %}" class="btn btn-primary btn-sm">View details</a>
           </div>
         </div>
       </div>

@@ -4,9 +4,7 @@ __pycache__/
 *$py.class
 
 # Django
-db.sqlite3*
 *.log
-/media/
 /staticfiles/
 
 # Virtual environment

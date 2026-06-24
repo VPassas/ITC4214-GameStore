@@ -1,0 +1,28 @@
+{% extends "store/base.html" %}
+
+{% block title %}Home - Game Store{% endblock %}
+
+{% block content %}
+  <h1 class="mb-4">Games</h1>
+
+  <div class="row">
+    {% for game in games %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          {% if game.image %}
+            <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ game.title }}</h5>
+            <p class="card-text text-muted">
+              {{ game.category.name }} · {{ game.get_platform_display }}
+            </p>
+            <p class="fw-bold">${{ game.price }}</p>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No games yet. Add some in the admin.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

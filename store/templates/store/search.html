@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Game Store{% endblock %} <!-- title for the page tab -->
+
+{% block content %}
+  <h1 class="mb-4">Search games</h1>
+
+  <!-- send the search query and filters to the search view -->
+  <form method="get" action="{% url 'store:search' %}" class="row g-2 mb-4">
+    <!-- search box -->
+    <div class="col-md-4">
+      <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search by name or description">
+    </div>
+    <!-- category filter -->
+    <div class="col-md-2">
+      <select name="category" class="form-select">
+        <option value="">All categories</option>
+        {% for category in categories %}
+          <!-- keep the chosen one selected after searching (compare as strings) -->
+          <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+            {{ category.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <!-- platform filter -->
+    <div class="col-md-2">
+      <select name="platform" class="form-select">
+        <option value="">All platforms</option>
+        {% for value, label in platforms %}
+          <option value="{{ value }}" {% if value == selected_platform %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <!-- price range filters -->
+    <div class="col-md-1">
+      <input type="number" name="min_price" value="{{ min_price }}" class="form-control" placeholder="Min €">
+    </div>
+    <div class="col-md-1">
+      <input type="number" name="max_price" value="{{ max_price }}" class="form-control" placeholder="Max €">
+    </div>
+    <!-- submit button -->
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+
+  <!--the game grid is reused. "games" here is the filtered result -->
+  {% include "store/_game_grid.html" %}
+{% endblock %}

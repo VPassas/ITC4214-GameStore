@@ -19,6 +19,12 @@
       </button>
       <!-- navbar links -->
       <div class="collapse navbar-collapse" id="mainNav">
+        <!-- quick search. submits ?q=... to the search page -->
+        <form class="d-flex mx-lg-3 my-2 my-lg-0" role="search" action="{% url 'store:search' %}" method="get">
+          <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Search games" aria-label="Search">
+          <button class="btn btn-outline-light btn-sm" type="submit">Search</button>
+        </form>
+        <!-- navbar items -->
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="{% url 'store:home' %}">Home</a></li>
           <li class="nav-item dropdown">

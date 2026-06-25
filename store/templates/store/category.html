@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} - Game Store{% endblock %} <!-- title for the page tab -->
+
+{% block content %}
+  <h1 class="mb-4">{{ category.name }}</h1> <!-- heading for the category page -->
+  {% include "store/_game_grid.html" %} <!-- include the game grid template -->
+{% endblock %}

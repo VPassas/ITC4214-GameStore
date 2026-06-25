@@ -1,0 +1,22 @@
+<!-- grid of game cards that can be reused -->
+<div class="row">
+  {% for game in games %} <!-- loop over games passed on to the template -->
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        {% if game.image %} <!-- if there is an image, include it-->
+          <img src="{{ game.image.url }}" class="card-img-top" alt="{{ game.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ game.title }}</h5>
+          <p class="card-text text-muted">
+            {{ game.category.name }} · {{ game.get_platform_display }}
+          </p>
+          <p class="fw-bold">${{ game.price }}</p>
+          <a href="{% url 'store:game_detail' game.id %}" class="btn btn-primary btn-sm">View details</a>
+        </div>
+      </div>
+    </div>
+  {% empty %} <!-- failsafe if there are no games -->
+    <p>No games found.</p>
+  {% endfor %}
+</div>

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +122,8 @@ STATIC_URL = 'static/'
 # user uploaded files like game cover images go into media/games/
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# authentication redirects
+LOGIN_REDIRECT_URL = 'store:home'    # where to go after a successful login
+LOGOUT_REDIRECT_URL = 'store:home'   # where to go after logging out
+LOGIN_URL = 'accounts:login'         # where @login_required sends anonymous users

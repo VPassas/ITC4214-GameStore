@@ -7,7 +7,7 @@
 
   <form method="post" class="col-md-4">
     {% csrf_token %}   <!-- CSRF protection is required for every POST form -->
-    {{ form.as_p }}    <!-- username and password fields, with Django's validation -->
+    {{ form.as_p }}    <!-- username and password fields with Django's validation -->
     <button type="submit" class="btn btn-primary">Log in</button>
   </form>
 

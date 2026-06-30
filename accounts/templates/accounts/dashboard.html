@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Game Store{% endblock %}
+
+{% block content %}
+  <h1 class="mb-4">Welcome back, {{ user.username }}!</h1>
+
+  <div class="row">
+    <div class="col-md-5">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Your account</h5>
+          <!-- fields -->
+          <p class="mb-1"><strong>Username:</strong> {{ user.username }}</p>
+          <p class="mb-1"><strong>Email:</strong> {{ user.email|default:"—" }}</p>
+          <p class="mb-3"><strong>Member since:</strong> {{ user.date_joined|date:"d M Y" }}</p>
+          <a href="{% url 'accounts:profile' %}" class="btn btn-sm btn-outline-primary">Edit profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="h4 mb-3">Recently viewed</h2>
+  {% if recently_viewed %}
+  <!-- Recently viewed games -->
+    {% include "store/_game_grid.html" with games=recently_viewed %}
+  {% else %}
+    <p class="text-muted">You haven't viewed any games yet. <a href="{% url 'store:home' %}">Browse games</a>.</p>
+  {% endif %}
+{% endblock %}

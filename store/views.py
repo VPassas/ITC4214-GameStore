@@ -12,6 +12,14 @@ def home(request):
 def game_detail(request, id):
     """this shows the details of a single game and sends 404 if the id does not exist"""
     game = get_object_or_404(Game, id=id)
+
+    # remember this game in the user's session so the dashboard can show "recently viewed"
+    viewed = request.session.get("recently_viewed", [])  # list of game ids or empty list the first time
+    if id in viewed:
+        viewed.remove(id)            # if already seen take it out so we can move it to the front
+    viewed.insert(0, id)             # newest viewed goes first
+    request.session["recently_viewed"] = viewed[:6]  # keep only the 6 most recent
+
     return render(request, "store/game_detail.html", {"game": game})
 
 

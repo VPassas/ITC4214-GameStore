@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from store.models import Game
 from .forms import ProfileForm
 
 
@@ -16,6 +17,16 @@ def register(request):
     else:
         form = UserCreationForm() # just show the empty form
     return render(request, "accounts/register.html", {"form": form})
+
+
+@login_required   # only logged in users can reach this page
+def dashboard(request):
+    """the user's personal dashboard which has the account summary and the games recently viewed."""
+    viewed_ids = request.session.get("recently_viewed", [])
+    # get the games in one query and then reorder them to be newest first
+    games_by_id = {game.id: game for game in Game.objects.filter(id__in=viewed_ids)}
+    recently_viewed = [games_by_id[i] for i in viewed_ids if i in games_by_id]
+    return render(request, "accounts/dashboard.html", {"recently_viewed": recently_viewed})
 
 
 @login_required   # only logged in users can reach this page

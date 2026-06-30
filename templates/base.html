@@ -43,6 +43,7 @@
           <!-- show login/register when logged out and username/logout when logged in -->
           {% if user.is_authenticated %}
             <li class="nav-item"><span class="nav-link">Hi, {{ user.username }}</span></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a></li>
             <li class="nav-item">
               <!-- logout must be a POST in modern Django so it is a small form -->

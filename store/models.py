@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -38,3 +39,32 @@ class Game(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Rating(models.Model):
+    """a user's star rating out of 5 for one game."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ratings")
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="ratings")
+    score = models.PositiveSmallIntegerField()  # we only ever store 1 to 5
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # a user can only have one rating per game and rating again updates the old one
+        unique_together = ("user", "game")
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.game.title}: {self.score}"
+
+
+class Like(models.Model):
+    """ a user 'liking' a game. The row existing means they like it if there is no row means they do not"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes")
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # a user can only like a game once
+        unique_together = ("user", "game")
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.game.title}"

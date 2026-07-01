@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Q
-from .models import Game, Category
+from django.http import JsonResponse
+from django.db.models import Q, Avg
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from .models import Game, Category, Rating, Like
 
 
 def home(request):
@@ -20,7 +23,60 @@ def game_detail(request, id):
     viewed.insert(0, id)             # newest viewed goes first
     request.session["recently_viewed"] = viewed[:6]  # keep only the 6 most recent
 
-    return render(request, "store/game_detail.html", {"game": game})
+    summary = _rating_summary(game)
+    # what has this user already done with this game
+    user_score = 0
+    user_liked = False
+    if request.user.is_authenticated:
+        rating = game.ratings.filter(user=request.user).first()
+        user_score = rating.score if rating else 0
+        user_liked = game.likes.filter(user=request.user).exists()
+
+    context = {
+        "game": game,
+        "average": summary["average"],
+        "rating_count": summary["count"],
+        "user_score": user_score,
+        "like_count": game.likes.count(),
+        "user_liked": user_liked,
+    }
+    return render(request, "store/game_detail.html", context)
+
+
+def _rating_summary(game):
+    """average score rounded and number of ratings for a game. Shared by game_detail and rate so we do not repeat the query"""
+    avg = game.ratings.aggregate(avg=Avg("score"))["avg"]  # none if no ratings yet
+    return {"average": round(avg, 1) if avg else 0, "count": game.ratings.count()}
+
+
+@login_required
+@require_POST
+def rate(request, id):
+    """an AJAX endpoint where we save or update the current user's 1-5 rating for a game and return the new average"""
+    game = get_object_or_404(Game, id=id)
+    try:
+        score = int(request.POST.get("score", 0))
+    except ValueError:
+        score = 0
+    if score < 1 or score > 5:
+        return JsonResponse({"error": "Score must be 1-5"}, status=400)
+
+    # update the user's existing rating or create one if this is their first
+    Rating.objects.update_or_create(user=request.user, game=game, defaults={"score": score})
+
+    summary = _rating_summary(game)
+    return JsonResponse({"average": summary["average"], "count": summary["count"], "user_score": score})
+
+
+@login_required
+@require_POST
+def toggle_like(request, id):
+    """another AJAX endpoint where the user can like the game if not liked yet, otherwise unlike it and return the new like state and count"""
+    game = get_object_or_404(Game, id=id)
+    like, created = Like.objects.get_or_create(user=request.user, game=game)
+    if not created:       # it already existed therefore this click means "unlike"
+        like.delete()
+    return JsonResponse({"liked": created, "count": game.likes.count()})
 
 
 def category_games(request, id):

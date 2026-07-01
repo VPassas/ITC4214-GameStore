@@ -18,6 +18,40 @@
       <p class="fs-4 fw-bold">${{ game.price }}</p>
       <p>{{ game.description }}</p>
       <p class="text-muted">In stock: {{ game.stock }}</p>
+
+      <!-- average rating and like count which is shown to everyone -->
+      <p class="mb-2">
+        ⭐ Average: <span id="avg">{{ average }}</span>/5
+        (<span id="rating-count">{{ rating_count }}</span> rating{{ rating_count|pluralize }})
+        · ❤️ <span id="like-count">{{ like_count }}</span> like{{ like_count|pluralize }}
+      </p>
+
+      {% if user.is_authenticated %}
+        <!-- the data attributes give the URLs, ids and csrf token to the JavaScript -->
+        <div id="game-actions"
+             data-rate-url="{% url 'store:rate' game.id %}"
+             data-like-url="{% url 'store:toggle_like' game.id %}"
+             data-user-score="{{ user_score }}"
+             data-liked="{{ user_liked|yesno:'true,false' }}"
+             data-csrf="{{ csrf_token }}">
+          <div class="mb-2">
+            <span class="me-2">Your rating:</span>
+            <span id="stars">
+              {% for n in "12345" %}
+                <button type="button" class="btn btn-link p-0 fs-4 text-decoration-none star" data-score="{{ forloop.counter }}">☆</button>
+              {% endfor %}
+            </span>
+          </div>
+          <button type="button" id="like-btn" class="btn btn-outline-danger btn-sm">Like</button>
+        </div>
+      {% else %}
+        <p><a href="{% url 'accounts:login' %}">Log in</a> to rate or like this game.</p>
+      {% endif %}
     </div>
   </div>
+{% endblock %}
+
+{% block extra_js %}
+  {% load static %}
+  <script src="{% static 'store/game_detail.js' %}"></script>
 {% endblock %}
